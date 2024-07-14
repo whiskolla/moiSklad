@@ -19,6 +19,16 @@ public class ItemService {
     public List<Item> getItems() {
         return repository.findAll();
     }
+    public List<Item> findListByName(String str) {
+        return repository.findListByName(str);
+    }
+
+    public List<Item> findListByPrice(Integer price) {
+        return repository.findListByPrice(price);
+    }
+    public List<Item> findListOfAvailable(boolean a) {
+        return repository.findListOfAvailable(a);
+    }
 
     public Item getItemById(int id) {
         return repository.findById(id).get();
