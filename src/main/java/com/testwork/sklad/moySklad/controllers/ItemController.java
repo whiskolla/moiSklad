@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,6 +37,25 @@ public class ItemController {
     @GetMapping
     public List<Item> findAllItems() {
         List<Item> items = service.getItems();
+        logger.info("List of items: " + items);
+        return items;
+    }
+    @GetMapping("list/by/name/{name}")
+    public List<Item> findListByName(@PathVariable String name) {
+        List<Item> items = service.findListByName(name);
+        logger.info("List of items: " + items);
+        return items;
+    }
+
+    @GetMapping("list/by/price/{price}")
+    public List<Item> findListByPrice(@PathVariable Integer price) {
+        List<Item> items = service.findListByPrice(price);
+        logger.info("List of items: " + items);
+        return items;
+    }
+    @GetMapping("list/of/available?={isAvailable}")
+    public List<Item> findListByPrice(@PathVariable boolean isAvailable) {
+        List<Item> items = service.findListOfAvailable(isAvailable);
         logger.info("List of items: " + items);
         return items;
     }
