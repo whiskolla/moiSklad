@@ -3,10 +3,14 @@ package com.testwork.sklad.moySklad.controllers;
 import com.testwork.sklad.moySklad.entities.Item;
 import com.testwork.sklad.moySklad.services.ItemService;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
+import java.rmi.ServerException;
 import java.util.List;
 
 @RestController
@@ -14,16 +18,26 @@ import java.util.List;
 public class ItemController {
     @Autowired
     private ItemService service;
+    private final Logger logger = LoggerFactory.getLogger(ItemController.class);
+    @PostMapping(path = "/add",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public Item addItem(@Valid @RequestBody Item item1) throws ServerException {
 
-    @PostMapping("/add")
-    public ResponseEntity<String> addItem(@Valid @RequestBody Item item) {
-        service.addItem(item);
-        return ResponseEntity.ok("Item correct");
+        Item item = service.add(item1);
+        if (item != null) {
+            logger.info("body: " + item);
+            return item;
+        } else {
+            throw new ServerException("Error in creating. Try Again.");
+        }
     }
 
     @GetMapping
     public List<Item> findAllItems() {
-        return service.getItems();
+        List<Item> items = service.getItems();
+        logger.info("List of items: " + items);
+        return items;
     }
 
     @GetMapping("{id}")
@@ -31,13 +45,27 @@ public class ItemController {
         return service.getItemById(id);
     }
 
-    @PutMapping("/update/{id}")
-    public Item updateItem(@Valid @RequestBody Item item) {
-        return service.updateItem(item);
+    @PutMapping(path="/update/{id}",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public Item updateItem(@Valid @RequestBody Item item1) throws ServerException {
+
+        Item item = service.update(item1);
+        if (item != null) {
+            logger.info("body: " + item);
+            return item;
+        } else {
+            throw new ServerException("Error in updating. Try Again.");
+        }
     }
 
     @DeleteMapping("/delete/{id}")
-    public String deleteItem(@PathVariable int id) {
-        return service.deleteItem(id);
+    public String deleteItem(@PathVariable int id) throws ServerException {
+        if (service.ifExists(id)) {
+            logger.info("Item to delete: " + service.getItemById(id));
+            return service.deleteItem(id);
+        } else {
+            throw new ServerException("Error in deleting. Try Again.");
+        }
     }
 }
