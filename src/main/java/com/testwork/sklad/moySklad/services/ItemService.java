@@ -12,24 +12,25 @@ public class ItemService {
     @Autowired
     private ItemRepository repository;
 
-    public Item addItem(Item item) {
-        return repository.add(item);
+    public Item add(Item item) {
+        return repository.save(item) ;
     }
 
     public List<Item> getItems() {
-        return repository.getAllItems();
+        return repository.findAll();
     }
 
     public Item getItemById(int id) {
-        return repository.findById(id);
+        return repository.findById(id).get();
     }
+
+    public boolean ifExists(int id){return repository.existsById(id);}
 
     public String deleteItem(int id) {
-        repository.delete(id);
+        repository.delete(repository.findById(id).get());
         return "removed item: " + id;
     }
-
-    public Item updateItem(Item item) {
-        return repository.update(item);
+    public Item update(Item item) {
+        return repository.save(item) ;
     }
 }
